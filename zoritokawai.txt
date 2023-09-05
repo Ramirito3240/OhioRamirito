@@ -160,6 +160,47 @@ local B = Y.Button({
 		end
 })
 
+local P = Y.Button({
+	Text = "EMOTES",
+	Callback = function()
+
+local METATABLE = {['Delay'] = 1; ['Spam'] = false; ['Mouse'] = game:GetService('Players').LocalPlayer:GetMouse(); ['LocalPlayer'] = game:GetService('Players').LocalPlayer};
+
+getgenv().CHATVIEW = function()
+    local CHATVISIBLE = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Speed.Holder
+    local CHATVISIBLE1 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Sturdy.Holder
+    local CHATVISIBLE2 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Griddy.Holder
+    local CHATVISIBLE3 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.DefaultDance.Holder
+    local CHATVISIBLE4 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Floss.Holder
+    local CHATVISIBLE5 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Dance1.Holder
+    local CHATVISIBLE6 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Cheer.Holder
+    local CHATVISIBLE7 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.HypeDance.Holder
+    local CHATVISIBLE8 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Jumpingjacks.Holder
+    local CHATVISIBLE9 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Lay.Holder
+    local CHATVISIBLE0 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.TPose.Holder
+    local CHATVISIBLE01 = METATABLE['LocalPlayer'].PlayerGui.Emotes.Frame.ScrollingFrame.Sit.Holder
+    CHATVISIBLE.Locked.Visible = false
+    CHATVISIBLE1.Locked.Visible = false
+    CHATVISIBLE2.Locked.Visible = false
+    CHATVISIBLE3.Locked.Visible = false
+    CHATVISIBLE4.Locked.Visible = false
+    CHATVISIBLE5.Locked.Visible = false
+    CHATVISIBLE6.Locked.Visible = false
+    CHATVISIBLE7.Locked.Visible = false
+    CHATVISIBLE8.Locked.Visible = false
+    CHATVISIBLE9.Locked.Visible = false
+    CHATVISIBLE0.Locked.Visible = false
+    CHATVISIBLE01.Locked.Visible = false
+
+end
+CHATVIEW()
+
+
+
+		end
+})
+
+
 local C = Y.Button({
 	Text = "ESP",
 	Callback = function()
