@@ -4,7 +4,7 @@ local X = Material.Load({
 	Title = "Zeta_Zoro",
 	Style = 3,
 	SizeX = 140,
-	SizeY = 328,
+	SizeY = 330,
 	Theme = "Dark",
 	ColorOverrides = {
 		MainFrame = Color3.fromRGB(235,235,235)
@@ -46,7 +46,7 @@ local B = Y.Button({
 		local da_hood_rblxm_REAL = getrawmetatable(game)
 		local CP = da_hood_rblxm_REAL.__newindex
 		local CP_DE_DRIZZY = da_hood_rblxm_REAL.__index
-		local velocidad_de_cum = 29
+		local velocidad_de_cum = 28
 		local es_pedofilo = true
 
 		-- // funciones para acortar codigo :]
@@ -358,24 +358,6 @@ end
 })
 
 
-local E = Y.Button({
-	Text = "VAULT",
-	Callback = function()
-
-local doorbank = game.Workspace.BankRobbery.VaultDoor.Door
-
-
-	
-
-
-doorbank.Attachment.ProximityPrompt.HoldDuration = 0
-
-
-
-		end
-})
-
-
 local J = Y.Button({
 	Text = "CHAT",
 	Callback = function()
@@ -457,7 +439,6 @@ end
 
 		end
 })
-
 
 local J = Y.Button({
 	Text = "ITEMS-NO",
