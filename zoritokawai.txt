@@ -21,6 +21,7 @@ local Bioi = Y.Button({
 local Camera = game.Workspace.CurrentCamera
 local Players = game:GetService("Players")
 local Holding = false
+local MouseDown = false
 
 local function AutoAimAtHead()
     local function getClosestPlayerToCursor(trg_part)
@@ -65,10 +66,24 @@ end
 
 local JumpButton5 = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TouchGui"):WaitForChild("TouchControlFrame"):WaitForChild("JumpButton"):WaitForChild("5")
 
--- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón existente
+-- Conectar la función AutoAimAtHead al evento MouseButton1Down del botón
 JumpButton5.MouseButton1Down:Connect(AutoAimAtHead)
+
+-- Conectar la función StopAutoAim al evento MouseButton1Up del botón
 JumpButton5.MouseButton1Up:Connect(StopAutoAim)
 
+-- Conectar la función AutoAimAtHead al evento InputChanged para detectar cuando se mantiene presionado el botón
+JumpButton5.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputState == Enum.UserInputState.Begin then
+            MouseDown = true
+            AutoAimAtHead()
+        elseif input.UserInputState == Enum.UserInputState.End then
+            MouseDown = false
+            StopAutoAim()
+        end
+    end
+end)
 
 		end
 })
