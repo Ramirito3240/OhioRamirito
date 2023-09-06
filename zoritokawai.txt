@@ -85,94 +85,99 @@ JumpButton5.InputChanged:Connect(function(input)
 end)
 ----------------------------------------------------------------
 
--- Crear el Frame en ScreenGui
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Función para crear el frame de Autoapuntado
+local function CreateAutoAimFrame()
+    -- Crear el Frame en ScreenGui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 200, 0, 50)
-Frame.Position = UDim2.new(1, -10, 0.5, -25)  -- Ajusta la posición hacia la derecha
-Frame.AnchorPoint = Vector2.new(1, 0.5)  -- Ancla al lado derecho
-Frame.BackgroundColor3 = Color3.new(0, 0, 0)
-Frame.BorderSizePixel = 2
-Frame.BorderColor3 = Color3.new(1, 1, 1)
-Frame.Parent = ScreenGui
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 200, 0, 50)
+    Frame.Position = UDim2.new(1, -240, 0.5, -25)  -- Ajusta la posición hacia la derecha
+    Frame.AnchorPoint = Vector2.new(1, 0.5)  -- Ancla al lado derecho
+    Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+    Frame.BorderSizePixel = 2
+    Frame.BorderColor3 = Color3.new(1, 1, 1)
+    Frame.Parent = ScreenGui
 
--- Crear el botón "Autoapuntar" dentro del Frame
-local ButtonAutoAim = Instance.new("TextButton")
-ButtonAutoAim.Size = UDim2.new(0.5, 0, 1, 0)
-ButtonAutoAim.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-ButtonAutoAim.BorderSizePixel = 0
-ButtonAutoAim.Text = "Autoapuntar (Desactivado)"
-ButtonAutoAim.TextColor3 = Color3.new(1, 1, 1)
-ButtonAutoAim.Parent = Frame
+    -- Crear el botón "Autoapuntar" dentro del Frame
+    local ButtonAutoAim = Instance.new("TextButton")
+    ButtonAutoAim.Size = UDim2.new(0.5, 0, 1, 0)
+    ButtonAutoAim.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    ButtonAutoAim.BorderSizePixel = 0
+    ButtonAutoAim.Text = "Autoapuntar (Desactivado)"
+    ButtonAutoAim.TextColor3 = Color3.new(1, 1, 1)
+    ButtonAutoAim.Parent = Frame
 
--- Variable para rastrear si el autoapuntado está activado o desactivado
-local autoAimEnabled = false
+    -- Variable para rastrear si el autoapuntado está activado o desactivado
+    local autoAimEnabled = false
 
--- Mantener una referencia al Frame
-local frameReference = Frame
+    -- Mantener una referencia al Frame
+    local frameReference = Frame
 
--- Función para apuntar a la cabeza del jugador más cercano
-local function AutoAimAtHead()
-    autoAimEnabled = not autoAimEnabled
-    if autoAimEnabled then
-        ButtonAutoAim.Text = "Autoapuntar (Activado)"
-    else
-        ButtonAutoAim.Text = "Autoapuntar (Desactivado)"
-    end
+    -- Función para apuntar a la cabeza del jugador más cercano
+    local function AutoAimAtHead()
+        autoAimEnabled = not autoAimEnabled
+        if autoAimEnabled then
+            ButtonAutoAim.Text = "Autoapuntar (Activado)"
+        else
+            ButtonAutoAim.Text = "Autoapuntar (Desactivado)"
+        end
 
-    local Camera = game.Workspace.CurrentCamera
-    local Players = game:GetService("Players")
+        local Camera = game.Workspace.CurrentCamera
+        local Players = game:GetService("Players")
 
-    local function getClosestPlayerToCursor(trg_part)
-        local nearest = nil
-        local last = math.huge
-        for _, v in pairs(Players:GetPlayers()) do
-            if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
-                if Players.LocalPlayer.Character:FindFirstChild(trg_part) then
-                    local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
-                    local AccPos = Vector2.new(ePos.x, ePos.y)
-                    local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
-                    local distance = (AccPos - mousePos).magnitude
-                    if distance < last and vissss and distance < 400 then
-                        last = distance
-                        nearest = v
+        local function getClosestPlayerToCursor(trg_part)
+            local nearest = nil
+            local last = math.huge
+            for _, v in pairs(Players:GetPlayers()) do
+                if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
+                    if Players.LocalPlayer.Character:FindFirstChild(trg_part) then
+                        local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
+                        local AccPos = Vector2.new(ePos.x, ePos.y)
+                        local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
+                        local distance = (AccPos - mousePos).magnitude
+                        if distance < last and vissss and distance < 400 then
+                            last = distance
+                            nearest = v
+                        end
                     end
                 end
             end
+            return nearest
         end
-        return nearest
-    end
 
-    local function aimAtHead()
-        if autoAimEnabled then
-            local closest = getClosestPlayerToCursor("Head")
-            if closest and closest.Character and closest.Character:FindFirstChild("Head") then
-                local targetPosition = closest.Character.Head.Position
-                local cameraPosition = Camera.CFrame.Position
-                local direction = (targetPosition - cameraPosition).unit
-                local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
-                Camera.CFrame = newCameraCFrame
+        local function aimAtHead()
+            if autoAimEnabled then
+                local closest = getClosestPlayerToCursor("Head")
+                if closest and closest.Character and closest.Character:FindFirstChild("Head") then
+                    local targetPosition = closest.Character.Head.Position
+                    local cameraPosition = Camera.CFrame.Position
+                    local direction = (targetPosition - cameraPosition).unit
+                    local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
+                    Camera.CFrame = newCameraCFrame
+                end
             end
         end
+
+        -- Conectar la función aimAtHead al evento RenderStepped
+        game:GetService("RunService").RenderStepped:Connect(aimAtHead)
     end
 
-    -- Conectar la función aimAtHead al evento RenderStepped
-    game:GetService("RunService").RenderStepped:Connect(aimAtHead)
+    -- Conectar la función AutoAimAtHead al evento MouseButton1Click del botón
+    ButtonAutoAim.MouseButton1Click:Connect(AutoAimAtHead)
+
+    -- Manejar la reaparición del personaje
+    game.Players.LocalPlayer.CharacterAdded:Connect(function()
+        -- Verificar si el frame existe y, si es así, volver a mostrarlo
+        if frameReference then
+            frameReference.Parent = ScreenGui
+        end
+    end)
 end
 
--- Conectar la función AutoAimAtHead al evento MouseButton1Click del botón
-ButtonAutoAim.MouseButton1Click:Connect(AutoAimAtHead)
-
--- Manejar la reaparición del personaje
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    -- Verificar si el frame existe y, si es así, volver a mostrarlo
-    if frameReference then
-        frameReference.Parent = ScreenGui
-    end
-end)
-
+-- Llamar a la función para crear el frame de Autoapuntado
+CreateAutoAimFrame()
 
 
 		end
