@@ -539,9 +539,6 @@ local Bere = Y.Toggle({
 	Text = "MONEY",
 	Callback = function(Value)
     if Value then
-        print("Desactivado")
-    else
- -- Crear o activar el ESP Money
             local ESP = Instance.new("Folder")
             ESP.Name = "MoneyESP"
             ESP.Parent = game.CoreGui
@@ -587,6 +584,16 @@ local Bere = Y.Toggle({
 
             -- Actualizar el ESP inicialmente
             updateESP()
+
+        print("Desactivado")
+    else
+local ESP = game.CoreGui:FindFirstChild("MoneyESP") -- Cambia "MoneyESP" por el nombre de tu ESP
+
+
+    ESP:Destroy()
+
+end
+
         print("Activado")
 end
 	end,
