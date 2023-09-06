@@ -4,8 +4,8 @@ local X = Material.Load({
 	Title = "Zeta_Zoro",
 	Style = 3,
 	SizeX = 140,
-	SizeY = 360,
-	Theme = "Dark",
+	SizeY = 290,
+	Theme = "Light",
 	ColorOverrides = {
 		MainFrame = Color3.fromRGB(235,235,235)
 	}
