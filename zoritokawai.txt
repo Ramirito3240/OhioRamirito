@@ -19,31 +19,51 @@ local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
 
-       
--- Cambia "JumpButton.5" al nombre correcto de tu botón
-local jumpButton = player.PlayerGui.TouchGui.TouchControlFrame:WaitForChild("JumpButton.5")
+-- Obtiene referencias a objetos clave
+local player = game.Players.LocalPlayer
+local userInputService = game:GetService("UserInputService")
+local camera = game.Workspace.CurrentCamera
+
+-- Cambia "JumpButton.5" al nombre correcto de tu botón de disparo
+local shootButton = player.PlayerGui.TouchGui.TouchControlFrame:WaitForChild("JumpButton.5")
 
 -- Cambia el objetivo deseado
-local targetPlayer = nil -- Aquí debes establecer el jugador al que quieres apuntar
+local targetPlayer = nil -- Establece el jugador al que quieres apuntar
 
--- Función para apuntar a la cabeza del jugador
-local function aimAtPlayerHead()
-    if targetPlayer and targetPlayer.Character then
+-- Variable para controlar si la cámara sigue al jugador
+local isCameraFollowing = false
+
+-- Función para seguir la cabeza del jugador
+local function followPlayerHead()
+    if isCameraFollowing and targetPlayer and targetPlayer.Character then
         local targetHead = targetPlayer.Character:FindFirstChild("Head")
         if targetHead then
-            local targetPosition = targetHead.Position
-            local lookVector = (targetPosition - camera.CFrame.Position).Unit
-            camera.CFrame = CFrame.new(camera.CFrame.Position, camera.CFrame.Position + lookVector)
+            local offset = Vector3.new(0, 2, 0) -- Ajusta la posición vertical de la cámara
+            local targetPosition = targetHead.Position + offset
+            camera.CFrame = CFrame.new(targetPosition, targetHead.Position)
         end
     end
 end
 
--- Maneja el evento de toque en el botón
-jumpButton.InputBegan:Connect(function(input)
+-- Maneja el evento de toque en el botón de disparo
+shootButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Touch then
-        aimAtPlayerHead()
+        isCameraFollowing = true
     end
 end)
+
+-- Maneja el evento de liberación del botón de disparo
+shootButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        isCameraFollowing = false
+    end
+end)
+
+-- Conecta la función de seguimiento al evento de RenderStepped para actualizar constantemente
+game:GetService("RunService").RenderStepped:Connect(function()
+    followPlayerHead()
+end)
+
 
 		end
 })
