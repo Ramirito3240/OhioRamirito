@@ -592,8 +592,6 @@ local ESP = game.CoreGui:FindFirstChild("MoneyESP") -- Cambia "MoneyESP" por el 
 
     ESP:Destroy()
 
-end
-
         print("Activado")
 end
 	end,
