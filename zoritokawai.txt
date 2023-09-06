@@ -82,14 +82,16 @@ local function GetClosestPlayer()
     return Target
 end
 
-UserInputService.InputBegan:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.Touch then
+local shootButton = game:GetService("Players").LocalPlayer.PlayerGui.TouchGui.TouchControlFrame.JumpButton:WaitForChild("5") -- Asegúrate de cambiar "JumpButton.5" al nombre correcto de tu botón de disparo.
+
+shootButton.InputBegan:Connect(function(Input, GameProcessed)
+    if not GameProcessed then
         Holding = true
     end
 end)
 
-UserInputService.InputEnded:Connect(function(Input)
-    if Input.UserInputType == Enum.UserInputType.Touch then
+shootButton.InputEnded:Connect(function(Input, GameProcessed)
+    if not GameProcessed then
         Holding = false
     end
 end)
