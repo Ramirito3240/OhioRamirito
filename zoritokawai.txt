@@ -18,27 +18,6 @@ local Y = X.New({
 local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
--- Crear el Frame en ScreenGui
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 200, 0, 50)
-Frame.Position = UDim2.new(0.5, -100, 0.9, 0)
-Frame.BackgroundColor3 = Color3.new(0, 0, 0)
-Frame.BorderSizePixel = 2
-Frame.BorderColor3 = Color3.new(1, 1, 1)
-Frame.Parent = ScreenGui
-
--- Crear el botón dentro del Frame
-local Button = Instance.new("TextButton")
-Button.Size = UDim2.new(1, 0, 1, 0)
-Button.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-Button.BorderSizePixel = 0
-Button.Text = "Autoapuntar"
-Button.TextColor3 = Color3.new(1, 1, 1)
-Button.Parent = Frame
-
 local Camera = game.Workspace.CurrentCamera
 local Players = game:GetService("Players")
 local Holding = false
@@ -84,9 +63,12 @@ local function StopAutoAim()
     Holding = false
 end
 
--- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón
-Button.MouseButton1Down:Connect(AutoAimAtHead)
-Button.MouseButton1Up:Connect(StopAutoAim)
+local JumpButton5 = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TouchGui"):WaitForChild("TouchControlFrame"):WaitForChild("JumpButton"):WaitForChild("5")
+
+-- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón existente
+JumpButton5.MouseButton1Down:Connect(AutoAimAtHead)
+JumpButton5.MouseButton1Up:Connect(StopAutoAim)
+
 
 		end
 })
