@@ -26,7 +26,7 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 local Holding = false
 
-_G.AimbotEnabled = false -- Cambia a "true" para habilitar el auto apuntado.
+_G.AimbotEnabled = true -- Cambia a "true" para habilitar el auto apuntado.
 _G.TeamCheck = false -- Si es "true", el script solo apuntará a miembros del equipo enemigo.
 _G.AimPart = "Head" -- Parte del cuerpo hacia la que apuntará el auto apuntado.
 _G.Sensitivity = 0.1 -- Cuanto menor sea, más rápido se ajustará el objetivo.
