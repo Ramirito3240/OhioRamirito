@@ -586,6 +586,7 @@ local Bere = Y.Toggle({
             updateESP()
 
         print("Desactivado")
+end
     else
 local ESP = game.CoreGui:FindFirstChild("MoneyESP") -- Cambia "MoneyESP" por el nombre de tu ESP
 
