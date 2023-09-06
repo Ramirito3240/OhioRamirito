@@ -535,6 +535,17 @@ end
 	Enabled = false
 })
 
+local Bere = Y.Toggle({
+	Text = "I'm a switch",
+	Callback = function(Value)
+    if Value then
+        print("Desactivado")
+    else
+        print("Activado")
+end
+	end,
+	Enabled = false
+})
 
 
 
