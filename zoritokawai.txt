@@ -4,7 +4,7 @@ local X = Material.Load({
 	Title = "Zeta_Zoro",
 	Style = 3,
 	SizeX = 140,
-	SizeY = 330,
+	SizeY = 360,
 	Theme = "Dark",
 	ColorOverrides = {
 		MainFrame = Color3.fromRGB(235,235,235)
@@ -357,6 +357,76 @@ end
 		end
 })
 
+
+local Epo = Y.Button({
+	Text = "MONEY",
+	Callback = function()
+
+-- Crear el ESP
+local ESP = Instance.new("Folder")
+ESP.Name = "MoneyESP"
+ESP.Parent = game.CoreGui
+
+-- Función para actualizar el ESP
+local function updateESP()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        local statsFolder = player:FindFirstChild("stats")
+        if statsFolder then
+            local moneyValue = statsFolder:FindFirstChild("Money")
+            if moneyValue and moneyValue:IsA("IntValue") then
+                local moneyAmount = moneyValue.Value
+                
+                -- Crear un BillboardGui para mostrar la información
+                local billboard = Instance.new("BillboardGui")
+                billboard.Adornee = player.Character:FindFirstChild("Head") -- Puedes ajustar esto según tu preferencia
+                billboard.Size = UDim2.new(0, 200, 0, 50)
+                billboard.StudsOffset = Vector3.new(0, 3, 0) -- Ajusta la posición vertical
+                billboard.Name = "MoneyBillboard"
+                billboard.Parent = ESP
+                
+                local moneyLabel = Instance.new("TextLabel", billboard)
+                moneyLabel.BackgroundTransparency = 1
+                moneyLabel.Size = UDim2.new(1, 0, 1, 0)
+                moneyLabel.Text = "" .. moneyAmount
+                moneyLabel.TextSize = 18
+                moneyLabel.TextColor3 = Color3.new(0, 1, 0)
+                moneyLabel.Font = Enum.Font.SourceSansBold
+                moneyLabel.TextStrokeTransparency = 0.4
+            end
+        end
+    end
+end
+
+-- Actualizar el ESP cuando un jugador se une o cambia
+game.Players.PlayerAdded:Connect(updateESP)
+game.Players.PlayerRemoving:Connect(function(player)
+    local billboard = ESP:FindFirstChild(player.Name)
+    if billboard then
+        billboard:Destroy()
+    end
+end)
+
+-- Actualizar el ESP inicialmente
+updateESP()
+
+		end
+})
+
+local Epoy = Y.Button({
+	Text = "MONEY-NO",
+	Callback = function()
+
+local ESP = game.CoreGui:FindFirstChild("MoneyESP") -- Cambia "MoneyESP" por el nombre de tu ESP
+
+if ESP then
+    ESP:Destroy()
+    print("MoneyESP ha sido eliminado.")
+else
+    print("MoneyESP no existe en CoreGui.")
+end
+
+		end
+})
 
 local J = Y.Button({
 	Text = "CHAT",
