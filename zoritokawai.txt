@@ -19,51 +19,62 @@ local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
 
--- Obtiene referencias a objetos clave
-local player = game.Players.LocalPlayer
-local userInputService = game:GetService("UserInputService")
-local camera = game.Workspace.CurrentCamera
+local Cam = workspace.CurrentCamera
 
--- Cambia "JumpButton.5" al nombre correcto de tu botón de disparo
-local shootButton = player.PlayerGui.TouchGui.TouchControlFrame:WaitForChild("JumpButton.5")
+local hotkey = false -- Cambia a "false" para que el script no se active de inmediato
 
--- Cambia el objetivo deseado
-local targetPlayer = nil -- Establece el jugador al que quieres apuntar
-
--- Variable para controlar si la cámara sigue al jugador
-local isCameraFollowing = false
-
--- Función para seguir la cabeza del jugador
-local function followPlayerHead()
-    if isCameraFollowing and targetPlayer and targetPlayer.Character then
-        local targetHead = targetPlayer.Character:FindFirstChild("Head")
-        if targetHead then
-            local offset = Vector3.new(0, 2, 0) -- Ajusta la posición vertical de la cámara
-            local targetPosition = targetHead.Position + offset
-            camera.CFrame = CFrame.new(targetPosition, targetHead.Position)
-        end
-    end
+function lookAt(target, eye)
+    Cam.CFrame = CFrame.new(target, eye)
 end
 
--- Maneja el evento de toque en el botón de disparo
-shootButton.InputBegan:Connect(function(input)
+function getClosestPlayerToCursor(trg_part)
+    local nearest = nil
+    local last = math.huge
+    for i, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer and game.Players.LocalPlayer.Character and v.Character and v.Character:FindFirstChild(trg_part) then
+            if game.Players.LocalPlayer.Character:FindFirstChild(trg_part) then
+                local ePos, vissss = workspace.CurrentCamera:WorldToViewportPoint(v.Character[trg_part].Position)
+                local AccPos = Vector2.new(ePos.x, ePos.y)
+                local mousePos = Vector2.new(workspace.CurrentCamera.ViewportSize.x / 2, workspace.CurrentCamera.ViewportSize.y / 2)
+                local distance = (AccPos - mousePos).magnitude
+                if distance < last and vissss and hotkey and distance < 400 then
+                    last = distance
+                    nearest = v
+                end
+            end
+        end
+    end
+    return nearest
+end
+
+local button = player.PlayerGui.TouchGui.TouchControlFrame:WaitForChild("JumpButton.5") -- Cambia "JumpButton.5" al nombre correcto de tu botón de disparo
+
+local function onButtonPressed()
+    hotkey = true -- Activa el script cuando se presione el botón de disparo
+end
+
+local function onButtonReleased()
+    hotkey = false -- Desactiva el script cuando se suelte el botón de disparo
+end
+
+button.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Touch then
-        isCameraFollowing = true
+        onButtonPressed()
     end
 end)
 
--- Maneja el evento de liberación del botón de disparo
-shootButton.InputEnded:Connect(function(input)
+button.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Touch then
-        isCameraFollowing = false
+        onButtonReleased()
     end
 end)
 
--- Conecta la función de seguimiento al evento de RenderStepped para actualizar constantemente
 game:GetService("RunService").RenderStepped:Connect(function()
-    followPlayerHead()
+    local closest = getClosestPlayerToCursor("Head")
+    if hotkey and closest and closest.Character:FindFirstChild("Head") then
+        lookAt(Cam.CFrame.p, closest.Character:FindFirstChild("Head").Position)
+    end
 end)
-
 
 		end
 })
