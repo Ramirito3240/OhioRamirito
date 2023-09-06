@@ -182,8 +182,6 @@ CreateAutoAimFrame()
 
 		end
 })
-
-
 local B = Y.Button({
 	Text = "CAFE",
 	Callback = function()
@@ -368,232 +366,7 @@ CHATVIEW()
 })
 
 
-local C = Y.Button({
-	Text = "ESP",
-	Callback = function()
 
- -- Configuración de colores y opciones
-_G.FriendColor = Color3.fromRGB(0, 0, 255)
-_G.EnemyColor = Color3.fromRGB(255, 0, 0)
-_G.UseTeamColor = true -- Utiliza los colores de equipo
-
---------------------------------------------------------------------------------------------
-local Holder = Instance.new("Folder", game.CoreGui)
-Holder.Name = "ESP"
-
-local Box = Instance.new("BoxHandleAdornment")
-Box.Name = "nilBox"
-Box.Size = Vector3.new(1, 2, 1)
-Box.Color3 = Color3.new(100 / 255, 100 / 255, 100 / 255)
-Box.Transparency = 1
-Box.ZIndex = 0
-Box.AlwaysOnTop = true
-Box.Visible = false
---------------------------------------------------------------------------------------------
-local NameTag = Instance.new("BillboardGui")
-NameTag.Name = "nilNameTag"
-NameTag.Enabled = false
-NameTag.Size = UDim2.new(0, 200, 0, 50)
-NameTag.AlwaysOnTop = true
-NameTag.StudsOffset = Vector3.new(0, 1.8, 0)
-
-
-local LoadCharacter = function(v)
-    repeat wait() until v.Character ~= nil
-    v.Character:WaitForChild("Humanoid")
-
-    local vHolder = Holder:FindFirstChild(v.DisplayName)
-    vHolder:ClearAllChildren()
-
-    local b = Box:Clone()
-    b.Name = v.DisplayName .. "Box"
-    b.Adornee = v.Character
-    b.Parent = vHolder
-
-    local t = NameTag:Clone()
-    t.Name = v.DisplayName .. "NameTag"
-    t.Enabled = true
-    t.Parent = vHolder
-    t.Adornee = v.Character:WaitForChild("Head", 5)
-
-    local nameTagText = Instance.new("TextLabel", t)
-    nameTagText.Name = "NameTagText"
-    nameTagText.BackgroundTransparency = 1
-    nameTagText.Position = UDim2.new(0, 0, 0, 0)
-    nameTagText.Size = UDim2.new(1, 0, 0.5, 0) -- Mitad superior para el nombre
-    nameTagText.TextSize = 18
-    nameTagText.TextColor3 = Color3.new(1, 1, 1)
-    nameTagText.Font = Enum.Font.SourceSansBold
-    nameTagText.TextStrokeTransparency = 0.4
-    nameTagText.Text = v.DisplayName
-
-    local healthLabel = Instance.new("TextLabel", t)
-    healthLabel.Name = "HealthLabel"
-    healthLabel.BackgroundTransparency = 1
-    healthLabel.Position = UDim2.new(0, 0, 0.3, 0) -- Mitad inferior para la vida
-    healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    healthLabel.TextSize = 18
-    healthLabel.TextColor3 = Color3.new(1, 1, 1)
-    healthLabel.Font = Enum.Font.SourceSansBold
-    healthLabel.TextStrokeTransparency = 0.4
-
-    local function updateNameTag()
-        if v.Character and v.Character:FindFirstChild("Humanoid") then
-            local maxHealth = math.floor(v.Character.Humanoid.MaxHealth)
-            local health = math.floor(v.Character.Humanoid.Health)
-            healthLabel.Text = "" .. health .. " / " .. maxHealth
-        else
-            healthLabel.Text = ""
-        end
-    end
-
-    updateNameTag()
-    v.Character:WaitForChild("Humanoid").Changed:Connect(updateNameTag)
-end
-
-local UnloadCharacter = function(v)
-    local vHolder = Holder:FindFirstChild(v.DisplayName)
-    if vHolder and (vHolder:FindFirstChild(v.DisplayName .. "Box") ~= nil or vHolder:FindFirstChild(v.DisplayName .. "NameTag") ~= nil) then
-        vHolder:ClearAllChildren()
-    end
-end
-
-local LoadPlayer = function(v)
-    local vHolder = Instance.new("Folder", Holder)
-    vHolder.Name = v.DisplayName
-    v.CharacterAdded:Connect(function()
-        pcall(LoadCharacter, v)
-    end)
-    v.CharacterRemoving:Connect(function()
-        pcall(UnloadCharacter, v)
-    end)
-    v.Changed:Connect(function(prop)
-        if prop == "TeamColor" then
-            UnloadCharacter(v)
-            wait()
-            LoadCharacter(v)
-        end
-    end)
-    LoadCharacter(v)
-end
-
-local UnloadPlayer = function(v)
-    UnloadCharacter(v)
-    local vHolder = Holder:FindFirstChild(v.DisplayName)
-    if vHolder then
-        vHolder:Destroy()
-    end
-end
-
-for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-    spawn(function() pcall(LoadPlayer, v) end)
-end
-
-game:GetService("Players").PlayerAdded:Connect(function(v)
-    pcall(LoadPlayer, v)
-end)
-
-game:GetService("Players").PlayerRemoving:Connect(function(v)
-    pcall(UnloadPlayer, v)
-end)
-
-game:GetService("Players").LocalPlayer.NameDisplayDistance = 0
-
-if _G.Reantheajfdfjdgs then
-    return
-end
-
-_G.Reantheajfdfjdgs = ":suifayhgvsdghfsfkajewfrhk321rk213kjrgkhj432rj34f67df"
-
-
-
-		end
-})
-
-local Ep = Y.Button({
-	Text = "ESP-NO",
-	Callback = function()
-
-local scriptToRemove = game.CoreGui:FindFirstChild("ESP") -- Cambia "ESP" por el nombre del script que deseas eliminar
-
-if scriptToRemove then
-    scriptToRemove:Remove()
-end
-
-
-		end
-})
-
-
-local Epo = Y.Button({
-	Text = "MONEY",
-	Callback = function()
-
--- Crear el ESP
-local ESP = Instance.new("Folder")
-ESP.Name = "MoneyESP"
-ESP.Parent = game.CoreGui
-
--- Función para actualizar el ESP
-local function updateESP()
-    for _, player in pairs(game.Players:GetPlayers()) do
-        local statsFolder = player:FindFirstChild("stats")
-        if statsFolder then
-            local moneyValue = statsFolder:FindFirstChild("Money")
-            if moneyValue and moneyValue:IsA("IntValue") then
-                local moneyAmount = moneyValue.Value
-                
-                -- Crear un BillboardGui para mostrar la información
-                local billboard = Instance.new("BillboardGui")
-                billboard.Adornee = player.Character:FindFirstChild("Head") -- Puedes ajustar esto según tu preferencia
-                billboard.Size = UDim2.new(0, 200, 0, 50)
-                billboard.StudsOffset = Vector3.new(0, 3, 0) -- Ajusta la posición vertical
-                billboard.Name = "MoneyBillboard"
-                billboard.Parent = ESP
-                
-                local moneyLabel = Instance.new("TextLabel", billboard)
-                moneyLabel.BackgroundTransparency = 1
-                moneyLabel.Size = UDim2.new(1, 0, 1, 0)
-                moneyLabel.Text = "" .. moneyAmount
-                moneyLabel.TextSize = 18
-                moneyLabel.TextColor3 = Color3.new(0, 1, 0)
-                moneyLabel.Font = Enum.Font.SourceSansBold
-                moneyLabel.TextStrokeTransparency = 0.4
-            end
-        end
-    end
-end
-
--- Actualizar el ESP cuando un jugador se une o cambia
-game.Players.PlayerAdded:Connect(updateESP)
-game.Players.PlayerRemoving:Connect(function(player)
-    local billboard = ESP:FindFirstChild(player.Name)
-    if billboard then
-        billboard:Destroy()
-    end
-end)
-
--- Actualizar el ESP inicialmente
-updateESP()
-
-		end
-})
-
-local Epoy = Y.Button({
-	Text = "MONEY-NO",
-	Callback = function()
-
-local ESP = game.CoreGui:FindFirstChild("MoneyESP") -- Cambia "MoneyESP" por el nombre de tu ESP
-
-if ESP then
-    ESP:Destroy()
-    print("MoneyESP ha sido eliminado.")
-else
-    print("MoneyESP no existe en CoreGui.")
-end
-
-		end
-})
 
 local J = Y.Button({
 	Text = "CHAT",
@@ -634,52 +407,205 @@ end
 		end
 })
 
-local J = Y.Button({
-	Text = "ITEMS",
-	Callback = function()
-	-- Encuentra la carpeta "Workspace.Game.Entities.ItemPickup"
-local carpetaItemPickup = workspace:FindFirstChild("Game"):FindFirstChild("Entities"):FindFirstChild("ItemPickup")
 
--- Verifica si la carpeta existe
-if carpetaItemPickup then
-    -- Itera a través de los objetos en la carpeta
-    for _, objeto in pairs(carpetaItemPickup:GetChildren()) do
-        if objeto:IsA("Model") then
-            -- Crea un BillboardGui
-            local billboard = Instance.new("BillboardGui")
-            billboard.Parent = objeto
-			billboard.AlwaysOnTop = true
-            billboard.Name = "ObjBillboard"
-			billboard.StudsOffset = Vector3.new(0, 1.8, 0)
-            billboard.Size = UDim2.new(0, 100, 0, 40) -- Tamaño del billboard
 
-            -- Crea un TextLabel en el BillboardGui para mostrar el nombre
-            local label = Instance.new("TextLabel")
-            label.Parent = billboard
-            label.Text = "obj" -- Cambia "obj" al nombre que desees
-            label.Size = UDim2.new(1, 0, 1, 0)
-            label.BackgroundTransparency = 1
-            label.TextColor3 = Color3.new(0, 1, 00)
-            label.TextSize = 10 -- Tamaño del texto
-			label.TextStrokeTransparency = 0.4
-			label.Font = Enum.Font.SourceSansBold
-			label.TextScaled = false
+local B = Y.Toggle({
+	Text = "ESP",
+	Callback = function(Value)
+    if Value then
+-------------------------------------------------------------------------------------------
 
-            -- Alinea el TextLabel al centro del BillboardGui
-            label.Position = UDim2.new(0, 0, 0.5, 0)
-            label.AnchorPoint = Vector2.new(0, 0.5)
-        end
-    end
-else
-    print("La carpeta 'Workspace.Game.Entities.ItemPickup' no fue encontrada.")
-end
 
-		end
+------------------------------------------------------------------------------------------------
+
+ _G.FriendColor = Color3.fromRGB(0, 0, 255)
+ _G.EnemyColor = Color3.fromRGB(255, 0, 0)
+ _G.UseTeamColor = true -- Utiliza los colores de equipo
+ 
+ --------------------------------------------------------------------------------------------
+ local Holder = Instance.new("Folder", game.CoreGui)
+ Holder.Name = "ESP"
+ 
+ local Box = Instance.new("BoxHandleAdornment")
+ Box.Name = "nilBox"
+ Box.Size = Vector3.new(1, 2, 1)
+ Box.Color3 = Color3.new(100 / 255, 100 / 255, 100 / 255)
+ Box.Transparency = 1
+ Box.ZIndex = 0
+ Box.AlwaysOnTop = true
+ Box.Visible = false
+ --------------------------------------------------------------------------------------------
+ local NameTag = Instance.new("BillboardGui")
+ NameTag.Name = "nilNameTag"
+ NameTag.Enabled = false
+ NameTag.Size = UDim2.new(0, 200, 0, 50)
+ NameTag.AlwaysOnTop = true
+ NameTag.StudsOffset = Vector3.new(0, 1.8, 0)
+ 
+ 
+ local LoadCharacter = function(v)
+     repeat wait() until v.Character ~= nil
+     v.Character:WaitForChild("Humanoid")
+ 
+     local vHolder = Holder:FindFirstChild(v.DisplayName)
+     vHolder:ClearAllChildren()
+ 
+     local b = Box:Clone()
+     b.Name = v.DisplayName .. "Box"
+     b.Adornee = v.Character
+     b.Parent = vHolder
+ 
+     local t = NameTag:Clone()
+     t.Name = v.DisplayName .. "NameTag"
+     t.Enabled = true
+     t.Parent = vHolder
+     t.Adornee = v.Character:WaitForChild("Head", 5)
+ 
+     local nameTagText = Instance.new("TextLabel", t)
+     nameTagText.Name = "NameTagText"
+     nameTagText.BackgroundTransparency = 1
+     nameTagText.Position = UDim2.new(0, 0, 0, 0)
+     nameTagText.Size = UDim2.new(1, 0, 0.5, 0) -- Mitad superior para el nombre
+     nameTagText.TextSize = 18
+     nameTagText.TextColor3 = Color3.new(1, 1, 1)
+     nameTagText.Font = Enum.Font.SourceSansBold
+     nameTagText.TextStrokeTransparency = 0.4
+     nameTagText.Text = v.DisplayName
+ 
+     local healthLabel = Instance.new("TextLabel", t)
+     healthLabel.Name = "HealthLabel"
+     healthLabel.BackgroundTransparency = 1
+     healthLabel.Position = UDim2.new(0, 0, 0.3, 0) -- Mitad inferior para la vida
+     healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
+     healthLabel.TextSize = 18
+     healthLabel.TextColor3 = Color3.new(1, 1, 1)
+     healthLabel.Font = Enum.Font.SourceSansBold
+     healthLabel.TextStrokeTransparency = 0.4
+ 
+     local function updateNameTag()
+         if v.Character and v.Character:FindFirstChild("Humanoid") then
+             local maxHealth = math.floor(v.Character.Humanoid.MaxHealth)
+             local health = math.floor(v.Character.Humanoid.Health)
+             healthLabel.Text = "" .. health .. " / " .. maxHealth
+         else
+             healthLabel.Text = ""
+         end
+     end
+ 
+     updateNameTag()
+     v.Character:WaitForChild("Humanoid").Changed:Connect(updateNameTag)
+ end
+ 
+ local UnloadCharacter = function(v)
+     local vHolder = Holder:FindFirstChild(v.DisplayName)
+     if vHolder and (vHolder:FindFirstChild(v.DisplayName .. "Box") ~= nil or vHolder:FindFirstChild(v.DisplayName .. "NameTag") ~= nil) then
+         vHolder:ClearAllChildren()
+     end
+ end
+ 
+ local LoadPlayer = function(v)
+     local vHolder = Instance.new("Folder", Holder)
+     vHolder.Name = v.DisplayName
+     v.CharacterAdded:Connect(function()
+         pcall(LoadCharacter, v)
+     end)
+     v.CharacterRemoving:Connect(function()
+         pcall(UnloadCharacter, v)
+     end)
+     v.Changed:Connect(function(prop)
+         if prop == "TeamColor" then
+             UnloadCharacter(v)
+             wait()
+             LoadCharacter(v)
+         end
+     end)
+     LoadCharacter(v)
+ end
+ 
+ local UnloadPlayer = function(v)
+     UnloadCharacter(v)
+     local vHolder = Holder:FindFirstChild(v.DisplayName)
+     if vHolder then
+         vHolder:Destroy()
+     end
+ end
+ 
+ for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+     spawn(function() pcall(LoadPlayer, v) end)
+ end
+ 
+ game:GetService("Players").PlayerAdded:Connect(function(v)
+     pcall(LoadPlayer, v)
+ end)
+ 
+ game:GetService("Players").PlayerRemoving:Connect(function(v)
+     pcall(UnloadPlayer, v)
+ end)
+ 
+ game:GetService("Players").LocalPlayer.NameDisplayDistance = 0
+ 
+ if _G.Reantheajfdfjdgs then
+     return
+ end
+ 
+ _G.Reantheajfdfjdgs = ":suifayhgvsdghfsfkajewfrhk321rk213kjrgkhj432rj34f67df"
+ 
+ 
+    else
+        local scriptToRemove = game.CoreGui:FindFirstChild("ESP") -- Cambia "ESP" por el nombre del script que deseas eliminar
+
+        if scriptToRemove then
+            scriptToRemove:Remove()
+        end   
+-----------------------------------------------------------------------------------------
+
+    
+    end    
+	end,
+	Enabled = false
 })
 
-local J = Y.Button({
-	Text = "ITEMS-NO",
-	Callback = function()
+local B = Y.Toggle({
+	Text = "ITEMS",
+	Callback = function(Value)
+    if Value then
+	-- Encuentra la carpeta "Workspace.Game.Entities.ItemPickup"
+    local carpetaItemPickup = workspace:FindFirstChild("Game"):FindFirstChild("Entities"):FindFirstChild("ItemPickup")
+
+    -- Verifica si la carpeta existe
+    if carpetaItemPickup then
+        -- Itera a través de los objetos en la carpeta
+        for _, objeto in pairs(carpetaItemPickup:GetChildren()) do
+            if objeto:IsA("Model") then
+                -- Crea un BillboardGui
+                local billboard = Instance.new("BillboardGui")
+                billboard.Parent = objeto
+                billboard.AlwaysOnTop = true
+                billboard.Name = "ObjBillboard"
+                billboard.StudsOffset = Vector3.new(0, 1.8, 0)
+                billboard.Size = UDim2.new(0, 100, 0, 40) -- Tamaño del billboard
+    
+                -- Crea un TextLabel en el BillboardGui para mostrar el nombre
+                local label = Instance.new("TextLabel")
+                label.Parent = billboard
+                label.Text = "obj" -- Cambia "obj" al nombre que desees
+                label.Size = UDim2.new(1, 0, 1, 0)
+                label.BackgroundTransparency = 1
+                label.TextColor3 = Color3.new(0, 1, 00)
+                label.TextSize = 10 -- Tamaño del texto
+                label.TextStrokeTransparency = 0.4
+                label.Font = Enum.Font.SourceSansBold
+                label.TextScaled = false
+    
+                -- Alinea el TextLabel al centro del BillboardGui
+                label.Position = UDim2.new(0, 0, 0.5, 0)
+                label.AnchorPoint = Vector2.new(0, 0.5)
+            end
+        end
+    else
+        print("La carpeta 'Workspace.Game.Entities.ItemPickup' no fue encontrada.")
+    end
+    else
 -- Encuentra la carpeta "Workspace.Game.Entities.ItemPickup"
 local carpetaItemPickup = workspace:FindFirstChild("Game"):FindFirstChild("Entities"):FindFirstChild("ItemPickup")
 
@@ -697,7 +623,11 @@ if carpetaItemPickup then
 else
     print("La carpeta 'Workspace.Game.Entities.ItemPickup' no fue encontrada.")
 end
-
-
-		end
+end
+	end,
+	Enabled = false
 })
+
+
+
+
