@@ -70,6 +70,9 @@ local function AutoAimAtHead()
                 local direction = (targetPosition - cameraPosition).unit
                 local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
                 Camera.CFrame = newCameraCFrame
+
+                -- Añadimos la orientación del personaje para que mire en la misma dirección que la cámara
+                localCharacter:SetPrimaryPartCFrame(newCameraCFrame)
             end
         end
     end)
