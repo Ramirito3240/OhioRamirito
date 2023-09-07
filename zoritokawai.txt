@@ -18,98 +18,56 @@ local Y = X.New({
 local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
-local Camera = workspace.CurrentCamera
+local Camera = game.Workspace.CurrentCamera
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
 local Holding = false
 
-_G.AimbotEnabled = false -- Cambia a "true" para habilitar el auto apuntado.
-_G.TeamCheck = false -- Si es "true", el script solo apuntará a miembros del equipo enemigo.
-_G.AimPart = "Head" -- Parte del cuerpo hacia la que apuntará el auto apuntado.
-_G.Sensitivity = 0.1 -- Cuanto menor sea, más rápido se ajustará el objetivo.
-
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-FOVCircle.Radius = 80
-FOVCircle.Filled = false
-FOVCircle.Color = Color3.fromRGB(255, 255, 255)
-FOVCircle.Visible = true
-FOVCircle.Transparency = 0.7
-FOVCircle.NumSides = 64
-FOVCircle.Thickness = 0
-
-local function GetClosestPlayer()
-    local MaximumDistance = 80
-    local Target = nil
-
-    for _, v in next, Players:GetPlayers() do
-        if v.Name ~= LocalPlayer.Name then
-            if _G.TeamCheck == true then
-                if v.Team ~= LocalPlayer.Team then
-                    if v.Character ~= nil then
-                        if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
-                            if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health > 0 then
-                                local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart").Position)
-                                local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
-
-                                if VectorDistance < MaximumDistance then
-                                    Target = v
-                                end
-                            end
-                        end
-                    end
-                end
-            else
-                if v.Character ~= nil then
-                    if v.Character:FindFirstChild("HumanoidRootPart") ~= nil then
-                        if v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("Humanoid").Health > 0 then
-                            local ScreenPoint = Camera:WorldToScreenPoint(v.Character:WaitForChild("HumanoidRootPart").Position)
-                            local VectorDistance = (Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2.new(ScreenPoint.X, ScreenPoint.Y)).Magnitude
-
-                            if VectorDistance < MaximumDistance then
-                                Target = v
-                            end
-                        end
+local function AutoAimAtHead()
+    local function getClosestPlayerToCursor(trg_part)
+        local nearest = nil
+        local last = math.huge
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
+                if Players.LocalPlayer.Character:FindFirstChild(trg_part) then
+                    local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
+                    local AccPos = Vector2.new(ePos.x, ePos.y)
+                    local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
+                    local distance = (AccPos - mousePos).magnitude
+                    if distance < last and vissss and distance < 400 then
+                        last = distance
+                        nearest = v
                     end
                 end
             end
         end
+        return nearest
     end
 
-    return Target
+    Holding = true
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Holding then
+            local closest = getClosestPlayerToCursor("Head")
+            if closest and closest.Character and closest.Character:FindFirstChild("Head") then
+                local targetPosition = closest.Character.Head.Position
+                local cameraPosition = Camera.CFrame.Position
+                local direction = (targetPosition - cameraPosition).unit
+                local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
+                Camera.CFrame = newCameraCFrame
+            end
+        end
+    end)
 end
 
-local shootButton = game:GetService("Players").LocalPlayer.PlayerGui.TouchGui.TouchControlFrame:WaitForChild("JumpButton.5") -- Asegúrate de cambiar "JumpButton.5" al nombre correcto de tu botón de disparo.
+local function StopAutoAim()
+    Holding = false
+end
 
-shootButton.InputBegan:Connect(function(Input, GameProcessed)
-    if not GameProcessed then
-        Holding = true
-    end
-end)
+local JumpButton5 = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TouchGui"):WaitForChild("TouchControlFrame"):WaitForChild("JumpButton"):WaitForChild("5")
 
-shootButton.InputEnded:Connect(function(Input, GameProcessed)
-    if not GameProcessed then
-        Holding = false
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    FOVCircle.Position = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-
-    if Holding and _G.AimbotEnabled then
-        local target = GetClosestPlayer()
-        if target and target.Character and target.Character:FindFirstChild(_G.AimPart) then
-            local targetPosition = target.Character[_G.AimPart].Position
-            local cameraPosition = Camera.CFrame.Position
-            local direction = (targetPosition - cameraPosition).unit
-            local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
-            Camera.CFrame = newCameraCFrame
-        end
-    end
-end)
+-- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón existente
+JumpButton5.MouseButton1Down:Connect(AutoAimAtHead)
+JumpButton5.MouseButton1Up:Connect(StopAutoAim)
 
 		end
 })
