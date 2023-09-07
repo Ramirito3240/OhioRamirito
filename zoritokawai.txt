@@ -18,22 +18,18 @@ local Y = X.New({
 local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
-local select = select
-local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
+local pcall, getgenv, Vector2, mathclamp = pcall, getgenv, Vector2.new, math.clamp
 
---// Preventing Multiple Processes
-
+-- Prevenir múltiples procesos
 pcall(function()
     getgenv().Aimbot.Functions:Exit()
 end)
 
---// Environment
-
+-- Entorno
 getgenv().Aimbot = {}
 local Environment = getgenv().Aimbot
 
---// Services
-
+-- Servicios
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -41,23 +37,21 @@ local Players = game:GetService("Players")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
---// Variables
-
+-- Variables
 local RequiredDistance, Typing, Running, Animation, ServiceConnections = 2000, false, false, nil, {}
 
---// Script Settings
-
+-- Configuración del script
 Environment.Settings = {
     Enabled = true,
     TeamCheck = false,
     AliveCheck = true,
-    WallCheck = false, -- Laggy
-    Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
-    ThirdPerson = false, -- Uses mousemoverel instead of CFrame to support locking in third person (could be choppy)
-    ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
-    TriggerButton = "PlayerGui.TouchGui.TouchControlFrame.JumpButton.5", -- Cambia a tu ruta correcta
+    WallCheck = false,
+    Sensitivity = 0,
+    ThirdPerson = false,
+    ThirdPersonSensitivity = 3,
+    TriggerButton = "PlayerGui.TouchGui.TouchControlFrame.JumpButton.5",
     Toggle = false,
-    LockPart = "Head" -- Body part to lock on
+    LockPart = "Head" -- Parte del cuerpo para enfocar
 }
 
 Environment.FOVSettings = {
@@ -74,11 +68,12 @@ Environment.FOVSettings = {
 
 Environment.FOVCircle = Drawing.new("Circle")
 
---// Functions
-
+-- Funciones
 local function CancelLock()
     Environment.Locked = nil
-    if Animation then Animation:Cancel() end
+    if Animation then
+        Animation:Cancel()
+    end
     Environment.FOVCircle.Color = Environment.FOVSettings.Color
 end
 
@@ -86,12 +81,18 @@ local function GetClosestPlayer()
     if not Environment.Locked then
         RequiredDistance = (Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000)
 
-        for _, v in next, Players:GetPlayers() do
+        for _, v in pairs(Players:GetPlayers()) do
             if v ~= LocalPlayer then
                 if v.Character and v.Character:FindFirstChild(Environment.Settings.LockPart) and v.Character:FindFirstChildOfClass("Humanoid") then
-                    if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then continue end
-                    if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then continue end
-                    if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then continue end
+                    if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then
+                        continue
+                    end
+                    if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then
+                        continue
+                    end
+                    if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then
+                        continue
+                    end
 
                     local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position)
                     local Distance = (Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2(Vector.X, Vector.Y)).Magnitude
@@ -108,8 +109,7 @@ local function GetClosestPlayer()
     end
 end
 
---// Typing Check
-
+-- Verificar si el jugador está escribiendo en un cuadro de texto
 ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
     Typing = true
 end)
@@ -118,8 +118,7 @@ ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased
     Typing = false
 end)
 
---// Main
-
+-- Función principal
 local function Load()
     ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
         if Environment.FOVSettings.Enabled and Environment.Settings.Enabled then
@@ -143,10 +142,9 @@ local function Load()
                     Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
 
                     local Vector = Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position)
-                    mousemoverel((Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity, (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity)
+                    UserInputService.MouseDelta = Vector2((Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity, (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity)
                 else
-                    -- Cambia el bloque "if" existente con esto
-                    if UserInputService:IsKeyDown(Enum.KeyCode[Environment.Settings.TriggerButton]) then
+                    if UserInputService:IsMouseButtonPressed(Enum.UserInputType.Touch, Environment.Settings.TriggerButton) then
                         Animation = TweenService:Create(Camera, TweenInfo.new(Environment.Settings.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, Environment.Locked.Character[Environment.Settings.LockPart].Position)})
                         Animation:Play()
                     else
@@ -155,7 +153,6 @@ local function Load()
                 end
 
                 Environment.FOVCircle.Color = Environment.FOVSettings.LockedColor
-
             end
         end
     end)
@@ -163,109 +160,20 @@ local function Load()
     ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
         if not Typing then
             pcall(function()
-                if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerButton] then
-                    if Environment.Settings.Toggle then
-                        Running = not Running
+                if Input.UserInputType == Enum.UserInputType.Touch then
+                    if UserInputService.TouchIsInRegion(Input, Environment.Settings.TriggerButton) then
+                        if Environment.Settings.Toggle then
+                            Running = not Running
 
-                        if not Running then
-                            CancelLock()
+                            if not Running then
+                                CancelLock()
+                            end
+                        else
+                            Running = true
                         end
-                    else
-                        Running = true
                     end
                 end
-            end)
 
-            pcall(function()
-                if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerButton] then
-                    if Environment.Settings.Toggle then
-                        Running = not Running
-
-                        if not Running then
-                            CancelLock()
-                        end
-                    else
-                        Running = true
-                    end
-                end
-            end)
-        end
-    end)
-
-    ServiceConnections.InputEndedConnection = UserInputService.InputEnded:Connect(function(Input)
-        if not Typing then
-            if not Environment.Settings.Toggle then
-                pcall(function()
-                    if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerButton then
-                        Running = false; CancelLock()
-                    end
-                end)
-
-                pcall(function()
-                    if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerButton] then
-                        Running = false; CancelLock()
-                    end
-                end)
-            end
-        end
-    end)
-end
-
---// Functions
-
-Environment.Functions = {}
-
-function Environment.Functions:Exit()
-    for _, v in next, ServiceConnections do
-        v:Disconnect()
-    end
-
-    if Environment.FOVCircle.Remove then Environment.FOVCircle:Remove() end
-
-    getgenv().Aimbot.Functions = nil
-    getgenv().Aimbot = nil
-
-    Load = nil; GetClosestPlayer = nil; CancelLock = nil
-end
-
-function Environment.Functions:Restart()
-    for _, v in next, ServiceConnections do
-        v:Disconnect()
-    end
-
-    Load()
-end
-
-function Environment.Functions:ResetSettings()
-    Environment.Settings = {
-        Enabled = true,
-        TeamCheck = false,
-        AliveCheck = true,
-        WallCheck = false,
-        Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
-        ThirdPerson = false, -- Uses mousemoverel instead of CFrame to support locking in third person (could be choppy)
-        ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
-        TriggerButton = "PlayerGui.TouchGui.TouchControlFrame.JumpButton.5", -- Cambia a tu ruta correcta
-        Toggle = false,
-        LockPart = "Head" -- Body part to lock on
-    }
-
-    Environment.FOVSettings = {
-        Enabled = false,
-        Visible = false,
-        Amount = 90,
-        Color = Color3.fromRGB(255, 255, 255),
-        LockedColor = Color3.fromRGB(255, 70, 70),
-        Transparency = 0,
-        Sides = 60,
-        Thickness = 1,
-        Filled = false
-    }
-end
-
---// Load
-
-Load()
 
 		end
 })
