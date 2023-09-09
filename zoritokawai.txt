@@ -19,62 +19,57 @@ local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
 
-local fov = 150
-local smoothing = 1
-local teamCheck = false -- Cambiado para que sea configurable
+local Camera = game.Workspace.CurrentCamera
+local Players = game:GetService("Players")
+local Holding = false
 
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-
-local FOVring = Drawing.new("Circle")
-FOVring.Visible = false
-FOVring.Thickness = 1.5
-FOVring.Radius = fov
-FOVring.Transparency = 0
-FOVring.Color = Color3.fromRGB(255, 128, 128)
-FOVring.Position = workspace.CurrentCamera.ViewportSize / 2
-
-local function getClosest(cframe)
-    local ray = Ray.new(cframe.Position, cframe.LookVector).Unit
-
-    local target = nil
-    local mag = math.huge
-
-    for i, v in pairs(game.Players:GetPlayers()) do
-        if v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("HumanoidRootPart") and v ~= game.Players.LocalPlayer and (v.Team ~= game.Players.LocalPlayer.Team or (not teamCheck)) then
-            local direction = (v.Character.Head.Position - ray.Origin).unit
-            local angle = math.acos(direction:Dot(ray.Direction))
-
-            if angle <= math.rad(fov) then
-                local magBuf = (v.Character.Head.Position - ray:ClosestPoint(v.Character.Head.Position)).Magnitude
-
-                if magBuf < mag then
-                    mag = magBuf
-                    target = v
+local function AutoAimAtHead()
+    local function getClosestPlayerToCursor(trg_part)
+        local nearest = nil
+        local last = math.huge
+        for _, v in pairs(Players:GetPlayers()) do
+            if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
+                if Players.LocalPlayer.Character:FindFirstChild(trg_part) then
+                    local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
+                    local AccPos = Vector2.new(ePos.x, ePos.y)
+                    local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
+                    local distance = (AccPos - mousePos).magnitude
+                    if distance < last and vissss and distance < 400 then
+                        last = distance
+                        nearest = v
+                    end
                 end
             end
         end
+        return nearest
     end
 
-    return target
+    Holding = true
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Holding then
+            local closest = getClosestPlayerToCursor("Head")
+            if closest and closest.Character and closest.Character:FindFirstChild("Head") then
+                local targetPosition = closest.Character.Head.Position
+                local cameraPosition = Camera.CFrame.Position
+                local direction = (targetPosition - cameraPosition).unit
+                local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
+                Camera.CFrame = newCameraCFrame
+            end
+        end
+    end)
 end
 
-local function onTouchButton()
-    local localPlay = game.Players.LocalPlayer.Character
-    local cam = workspace.CurrentCamera
-    local zz = workspace.CurrentCamera.ViewportSize / 2
-
-    local Line = Drawing.new("Line")
-    local curTar = getClosest(cam.CFrame)
-    local ssHeadPoint = cam:WorldToScreenPoint(curTar.Character.Head.Position)
-    ssHeadPoint = Vector2.new(ssHeadPoint.X, ssHeadPoint.Y)
-    if (ssHeadPoint - zz).Magnitude < fov then
-        workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(cam.CFrame.Position, curTar.Character.Head.Position), smoothing)
-    end
+local function StopAutoAim()
+    Holding = false
 end
 
--- Conecta la función onTouchButton() al botón táctil, reemplaza "TuBotonTactil" con el nombre de tu botón
-game.Players.LocalPlayer.PlayerGui:WaitForChild("TuBotonTactil").MouseButton1Click:Connect(onTouchButton)
+local JumpButton5 = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TouchGui"):WaitForChild("TouchControlFrame"):WaitForChild("JumpButton"):WaitForChild("5")
+
+-- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón existente
+JumpButton5.MouseButton1Down:Connect(AutoAimAtHead)
+JumpButton5.MouseButton1Up:Connect(StopAutoAim)
+
 		end
 })
 local B = Y.Button({
