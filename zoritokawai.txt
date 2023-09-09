@@ -18,48 +18,31 @@ local Y = X.New({
 local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
-local Camera = game.Workspace.CurrentCamera
 local Players = game:GetService("Players")
 local Holding = false
 
 local function AutoAimAtHead()
-    Holding = true
-
     local function getClosestPlayerToCursor(trg_part)
         local nearest = nil
         local last = math.huge
-
-        local localPlayer = Players.LocalPlayer
-        local localCharacter = localPlayer.Character
-
-        if localCharacter and localCharacter:FindFirstChild(trg_part) then
-            local ePos, vissss = Camera:WorldToViewportPoint(localCharacter[trg_part].Position)
-            local AccPos = Vector2.new(ePos.x, ePos.y)
-            local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
-            local distance = (AccPos - mousePos).magnitude
-
-            if distance < last and vissss and distance < 400 then
-                last = distance
-                nearest = localPlayer
-            end
-        end
-
         for _, v in pairs(Players:GetPlayers()) do
-            if v ~= localPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
-                local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
-                local AccPos = Vector2.new(ePos.x, ePos.y)
-                local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
-                local distance = (AccPos - mousePos).magnitude
-
-                if distance < last and vissss and distance < 400 then
-                    last = distance
-                    nearest = v
+            if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild(trg_part) then
+                if Players.LocalPlayer.Character:FindFirstChild(trg_part) then
+                    local ePos, vissss = Camera:WorldToViewportPoint(v.Character[trg_part].Position)
+                    local AccPos = Vector2.new(ePos.x, ePos.y)
+                    local mousePos = Vector2.new(Camera.ViewportSize.x / 2, Camera.ViewportSize.y / 2)
+                    local distance = (AccPos - mousePos).magnitude
+                    if distance < last and vissss and distance < 400 then
+                        last = distance
+                        nearest = v
+                    end
                 end
             end
         end
-
         return nearest
     end
+
+    Holding = true
 
     game:GetService("RunService").RenderStepped:Connect(function()
         if Holding then
@@ -70,9 +53,6 @@ local function AutoAimAtHead()
                 local direction = (targetPosition - cameraPosition).unit
                 local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
                 Camera.CFrame = newCameraCFrame
-
-                -- Añadimos la orientación del personaje para que mire en la misma dirección que la cámara
-                localCharacter:SetPrimaryPartCFrame(newCameraCFrame)
             end
         end
     end)
@@ -87,7 +67,6 @@ local JumpButton5 = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForCh
 -- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón existente
 JumpButton5.MouseButton1Down:Connect(AutoAimAtHead)
 JumpButton5.MouseButton1Up:Connect(StopAutoAim)
-
 
 		end
 })
