@@ -528,7 +528,7 @@ Animate.run.RunAnim.AnimationId = "http://www.roblox.com/asset/?id=1014401683"
 Animate.jump.JumpAnim.AnimationId = "http://www.roblox.com/asset/?id=1014394726"
 Animate.climb.ClimbAnim.AnimationId = "http://www.roblox.com/asset/?id=1014380606"
 Animate.fall.FallAnim.AnimationId = "http://www.roblox.com/asset/?id=1014384571"
-game.Players.LocalPlayer.Character.Humanoid.Jump = true
+game.Players.LocalPlayer.Character.Humanoid.Jump = false
 	end,
 	Enabled = false
 })
