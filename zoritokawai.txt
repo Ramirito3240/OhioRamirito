@@ -14,7 +14,86 @@ local X = Material.Load({
 local Y = X.New({
 	Title = "Nya"
 })
+------------------------------
+local Bioir = Y.Button({
+	Text = "AIMBOT2",
+	Callback = function()
 
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 200, 0, 50)
+Frame.Position = UDim2.new(0.5, -100, 0, 0) -- Posición en la parte superior
+Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+Frame.BorderSizePixel = 2
+Frame.BorderColor3 = Color3.new(1, 1, 1)
+Frame.Parent = ScreenGui
+
+-- Crear el botón dentro del Frame
+local Button = Instance.new("TextButton")
+Button.Size = UDim2.new(1, 0, 1, 0)
+Button.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+Button.BorderSizePixel = 0
+Button.Text = "Autoapuntar"
+Button.TextColor3 = Color3.new(1, 1, 1)
+Button.Parent = Frame
+
+local Camera = game.Workspace.CurrentCamera
+local Players = game:GetService("Players")
+local Holding = false
+
+local function AutoAimAtHead()
+    local localPlayer = game.Players.LocalPlayer
+
+    Holding = true
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Holding then
+            local closestPlayer = nil
+            local closestDistance = math.huge
+            local localPosition = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart") and localPlayer.Character.HumanoidRootPart.Position
+
+            if localPosition then
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= localPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                        local headPosition = player.Character.Head.Position
+                        local distance = (headPosition - localPosition).Magnitude
+
+                        if distance < closestDistance then
+                            closestPlayer = player
+                            closestDistance = distance
+                        end
+                    end
+                end
+
+                if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("Head") then
+                    local targetPosition = closestPlayer.Character.Head.Position
+                    local cameraPosition = Camera.CFrame.Position
+                    local direction = (targetPosition - cameraPosition).unit
+                    local newCameraCFrame = CFrame.new(cameraPosition, cameraPosition + direction)
+                    Camera.CFrame = newCameraCFrame
+                end
+            end
+        end
+    end)
+end
+
+local function StopAutoAim()
+    Holding = false
+end
+
+-- Conectar las funciones a los eventos MouseButton1Down y MouseButton1Up del botón
+Button.MouseButton1Down:Connect(AutoAimAtHead)
+Button.MouseButton1Up:Connect(StopAutoAim)
+
+		end
+})
+
+
+
+
+-------------------------------
 local Bioi = Y.Button({
 	Text = "AIMBOT",
 	Callback = function()
